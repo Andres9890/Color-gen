@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Random Color Generator</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      transition: background-color 0.5s ease;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      background-color: rgba(255, 255, 255, 0.85);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      width: 90%;
+    }
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+    .color-display {
+      height: 200px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    .color-info {
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+    .color-code {
+      font-family: monospace;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .fun-fact {
+      background-color: rgba(255, 255, 255, 0.7);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 18px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 18px;
+      margin: 10px 2px;
+      cursor: pointer;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background-color: #45a049;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Random Color Generator</h1>
+    <div class="color-display" id="colorDisplay"></div>
+    <div class="color-info">
+      <div class="color-code" id="colorCode"></div>
+      <div id="colorName"></div>
+    </div>
+    <div class="fun-fact" id="funFact"></div>
+    <button onclick="generateRandomColor()">Generate New Color</button>
+  </div>
+
+  <script>
+    // Define color ranges with expanded hues and extra fun facts
+    const colorRanges = [
+      {
+        name: "Red",
+        range: [0, 30],
+        facts: [
+          "Red is the first color babies can see after black and white.",
+          "The human eye can distinguish more shades of red than any other color.",
+          "In Chinese culture, red symbolizes good luck and happiness.",
+          "Red cars are statistically pulled over more often for speeding.",
+          "The red dye used by ancient Romans was made from crushing thousands of beetles.",
+          "Red is often associated with passion, love, and energy."
+        ]
+      },
+      {
+        name: "Orange",
+        range: [31, 60],
+        facts: [
+          "Orange was not recognized as a color in Europe until the 16th century.",
+          "Orange is named after the fruit, not the other way around.",
+          "The Netherlands national color is orange, representing the House of Orange-Nassau.",
+          "Orange is one of the most visible colors and is often used for safety equipment.",
+          "Carrots were originally purple—orange carrots were bred in the 17th century.",
+          "Orange is considered a vibrant and energetic color."
+        ]
+      },
+      {
+        name: "Yellow",
+        range: [61, 90],
+        facts: [
+          "Yellow is the most visible color from a distance, which is why school buses are yellow.",
+          "The human eye processes yellow first, making it highly noticeable.",
+          "Bees are particularly attracted to yellow.",
+          "In Egypt, yellow was associated with gold and immortality.",
+          "Historically, yellow pigments were made from toxic materials like arsenic and lead.",
+          "Yellow is often linked with happiness and optimism."
+        ]
+      },
+      {
+        name: "Green",
+        range: [91, 150],
+        facts: [
+          "The human eye can distinguish more shades of green than any other color.",
+          "Green is the most common color in the natural world.",
+          "Medieval green dye was derived from the plant woad, also used for blue dye.",
+          "Green was considered unlucky in early theater—actors would sometimes avoid it.",
+          "Night vision goggles display images in shades of green because our eyes are most sensitive to it.",
+          "Green symbolizes growth, renewal, and nature."
+        ]
+      },
+      {
+        name: "Blue",
+        range: [151, 195],
+        facts: [
+          "Blue is the world's favorite color according to numerous surveys.",
+          "Ancient languages like Greek, Chinese, and Japanese originally lacked a word for blue.",
+          "The first synthetic blue pigment was created by the ancient Egyptians.",
+          "Blue is known to have a calming effect and can lower blood pressure.",
+          "Blue is often associated with stability and depth in art and design.",
+          "It is commonly linked with trust, loyalty, and wisdom."
+        ]
+      },
+      {
+        name: "Cyan",
+        range: [196, 240],
+        facts: [
+          "Cyan is a greenish-blue and one of the primary colors in the subtractive (CMYK) color model.",
+          "It is widely used in printing alongside magenta, yellow, and black.",
+          "Cyan symbolizes clarity, freshness, and innovation.",
+          "This color is often seen in clear skies and tropical waters.",
+          "Cyan is sometimes also called aqua or turquoise.",
+          "Its soothing quality makes it popular in design and art."
+        ]
+      },
+      {
+        name: "Purple",
+        range: [241, 260],
+        facts: [
+          "Purple dye was once so rare and expensive that only royalty could afford it.",
+          "The term 'purple prose' refers to overly elaborate or ornate writing.",
+          "Purple is one of the most challenging colors for the human eye to discriminate.",
+          "Leonardo da Vinci believed meditation under purple light amplified its effects tenfold.",
+          "Purple is created by mixing red and blue light.",
+          "It often represents luxury, power, and ambition."
+        ]
+      },
+      {
+        name: "Magenta",
+        range: [261, 330],
+        facts: [
+          "Magenta is a vibrant color resulting from mixing red and blue light—it doesn’t exist as a single wavelength.",
+          "It’s one of the key colors in the printing process (CMYK model).",
+          "Magenta can evoke feelings of excitement and creativity.",
+          "This color is frequently used to make bold statements in art and design.",
+          "Magenta was officially named in the mid-19th century.",
+          "It is often associated with unconventionality and energy."
+        ]
+      },
+      {
+        name: "Crimson",
+        range: [331, 360],
+        facts: [
+          "Crimson is a rich, deep red color used since ancient times.",
+          "It is often associated with power, passion, and intensity.",
+          "Crimson was a popular choice for robes and ceremonial garments in many cultures.",
+          "This shade can evoke strong emotions and is featured in many national flags.",
+          "In literature, crimson sometimes symbolizes both love and violence.",
+          "Crimson has a long history in art and design, representing both beauty and boldness."
+        ]
+      }
+    ];
+
+    // Determine the color name based on HSL values
+    function getColorName(hue, saturation, lightness) {
+      // Handle low saturation colors
+      if (saturation < 10) {
+        if (lightness > 90) return "White";
+        if (lightness < 15) return "Black";
+        return "Gray";
+      }
+      // Special handling for browns (darker, unsaturated reds)
+      if (lightness < 50 && saturation < 50 && (hue >= 0 && hue <= 30)) {
+        return "Brown";
+      }
+      // Loop through defined color ranges
+      for (const color of colorRanges) {
+        if (color.range.length === 2) {
+          if (hue >= color.range[0] && hue <= color.range[1]) {
+            return color.name;
+          }
+        }
+      }
+      return "Unknown";
+    }
+
+    // Convert HSL to Hex
+    function hslToHex(h, s, l) {
+      s /= 100;
+      l /= 100;
+      const a = s * Math.min(l, 1 - l);
+      const f = (n, k = (n + h / 30) % 12) =>
+        l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      const r = Math.round(f(0) * 255);
+      const g = Math.round(f(8) * 255);
+      const b = Math.round(f(4) * 255);
+      return "#" + ((1 << 24) + (r << 16) + (g << 8) + b)
+        .toString(16)
+        .slice(1)
+        .toUpperCase();
+    }
+
+    // Generate a random integer between min and max (inclusive)
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Generate a new random color
+    function generateRandomColor() {
+      // Generate random HSL values with a distribution that avoids extremes
+      const hue = Math.floor(Math.random() * 360);
+      const saturation = Math.floor(Math.random() * 101); // 0-100%
+      const lightness = Math.floor(Math.random() * 81) + 10; // 10-90%
+
+      // Convert HSL to Hex
+      const hexColor = hslToHex(hue, saturation, lightness);
+
+      // Determine the color name and select a random fun fact
+      const colorName = getColorName(hue, saturation, lightness);
+      const colorInfo = colorRanges.find(c => c.name === colorName);
+      let funFact = "Interesting colors are all around us!";
+      if (colorInfo && colorInfo.facts) {
+        const randomFactIndex = Math.floor(Math.random() * colorInfo.facts.length);
+        funFact = colorInfo.facts[randomFactIndex];
+      }
+
+      // Choose text color for contrast based on lightness
+      const textColor = lightness > 70 ? "#000000" : "#FFFFFF";
+
+      // Update the display elements
+      document.getElementById("colorDisplay").style.backgroundColor = hexColor;
+      document.getElementById("colorDisplay").style.color = textColor;
+      document.getElementById("colorCode").textContent = hexColor;
+      document.getElementById("colorName").textContent = colorName;
+      document.getElementById("funFact").textContent = funFact;
+
+      // Set a lighter background for the page based on the current color
+      const bgHue = hue;
+      const bgSaturation = Math.min(saturation, 30);
+      const bgLightness = Math.max(80, lightness);
+      document.body.style.backgroundColor = `hsl(${bgHue}, ${bgSaturation}%, ${bgLightness}%)`;
+    }
+
+    // Generate a color when the page loads
+    window.onload = generateRandomColor;
+  </script>
+</body>
+</html>
